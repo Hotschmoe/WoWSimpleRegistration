@@ -108,17 +108,28 @@ environment:
 
 ### Custom Configuration
 
-1. **Copy the sample config:**
+1. **Copy the sample config (if needed):**
    ```bash
-   cp config/config.php ../application/config/config.php
+   # The Docker container will automatically create config.php from the sample
+   # If you want to customize it, you can edit it directly:
+   docker exec -it wow-registration nano /var/www/html/application/config/config.php
+   ```
+
+   Or copy and edit locally:
+   ```bash
+   cp config/config.php.example ../application/config/config.php
+   # Then edit ../application/config/config.php
    ```
 
 2. **Edit the configuration file to match your server setup:**
-   - Update database credentials
+   - Update database credentials (or use environment variables)
    - Set your realm information
    - Configure SMTP settings
    - Choose your template
    - Enable/disable features
+
+3. **Using Environment Variables:**
+   The sample config in `docker/config/config.php.example` shows how to use environment variables for database configuration, which are already set in the docker-compose.yml.
 
 ### Volume Mounting for Development
 
@@ -189,6 +200,28 @@ The example setup includes MailHog for testing emails:
 For production, update the SMTP settings in your config.php to use a real mail server.
 
 ## 🐛 Troubleshooting
+
+### Composer/Vendor Directory Issues
+
+If you see errors about missing `vendor/autoload.php`:
+
+1. **Rebuild the container:**
+   ```bash
+   docker-compose down
+   docker-compose up -d --build wow-registration
+   ```
+
+2. **Manually install dependencies:**
+   ```bash
+   docker exec -it wow-registration bash
+   cd /var/www/html/application
+   composer install --no-dev --optimize-autoloader
+   ```
+
+3. **Check if vendor directory exists:**
+   ```bash
+   docker exec wow-registration ls -la /var/www/html/application/vendor
+   ```
 
 ### Blank Page or Errors
 

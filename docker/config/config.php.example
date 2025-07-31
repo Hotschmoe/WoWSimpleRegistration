@@ -1,0 +1,93 @@
+<?php
+/**
+ * Docker Configuration for WoW Simple Registration
+ * This config uses environment variables when available, with fallbacks
+ * the real config needs to be placed in application/config
+ **/
+
+// Basic Configuration
+$config['baseurl'] = getenv('BASEURL') ?: "http://localhost";
+$config['page_title'] = "WoW Simple Register";
+$config['language'] = "english";
+$config['supported_langs'] = [
+    'english' => 'English',
+    'persian' => 'Persian',
+    'italian' => 'Italian',
+    'chinese-simplified' => 'Chinese Simplified',
+    'chinese-traditional' => 'Chinese Traditional',
+    'swedish' => 'Swedish',
+    'french' => 'French',
+    'german' => 'German',
+    'spanish' => 'Spanish',
+    'korean' => 'Korean',
+    'russian' => 'Russian',
+    'portugues' => 'Portuguese',
+];
+
+// Debug Mode - Set to false for production
+$config['debug_mode'] = getenv('DEBUG_MODE') === 'true' ?: false;
+
+// Server Information
+$config['realmlist'] = getenv('REALMLIST') ?: 'logon.localhost';
+$config['patch_location'] = '';
+$config['game_version'] = '3.3.5a (12340)';
+$config['expansion'] = '2'; // WotLK
+
+// Server Core Configuration
+$config['server_core'] = 0; // TrinityCore
+$config['battlenet_support'] = false;
+$config['srp6_support'] = true;
+$config['srp6_version'] = 2;
+
+// Feature Toggles
+$config['disable_top_players'] = false;
+$config['disable_online_players'] = false;
+$config['disable_changepassword'] = false;
+$config['multiple_email_use'] = false;
+
+// Template Selection
+$config['template'] = 'light';
+
+// SMTP Configuration (using MailHog in Docker)
+$config['smtp_host'] = getenv('SMTP_HOST') ?: 'mailhog';
+$config['smtp_port'] = getenv('SMTP_PORT') ?: 1025;
+$config['smtp_auth'] = false; // MailHog doesn't need auth
+$config['smtp_user'] = '';
+$config['smtp_pass'] = '';
+$config['smtp_secure'] = ''; // No encryption for MailHog
+$config['smtp_mail'] = 'no-reply@localhost';
+
+// Vote System
+$config['vote_system'] = true;
+$config['vote_sites'] = array(
+    // Add your vote sites here
+);
+
+// SOAP Configuration
+$config['soap_for_register'] = false;
+
+// Captcha Configuration
+$config['captcha_type'] = 0; // 0 = Disabled
+
+// Database Configuration (using Docker service names)
+$config['db_auth_host'] = getenv('DB_AUTH_HOST') ?: 'wow-mysql-auth';
+$config['db_auth_port'] = getenv('DB_AUTH_PORT') ?: '3306';
+$config['db_auth_user'] = getenv('DB_AUTH_USER') ?: 'trinity';
+$config['db_auth_pass'] = getenv('DB_AUTH_PASS') ?: 'trinity_password';
+$config['db_auth_dbname'] = getenv('DB_AUTH_NAME') ?: 'auth';
+
+// Realm Configuration
+$config['realmlists'] = array(
+    "1" => array(
+        'realmid' => 1,
+        'realmname' => "Realm 1",
+        'db_host' => getenv('DB_CHAR_HOST') ?: 'wow-mysql-characters',
+        'db_port' => getenv('DB_CHAR_PORT') ?: '3306',
+        'db_user' => getenv('DB_CHAR_USER') ?: 'trinity',
+        'db_pass' => getenv('DB_CHAR_PASS') ?: 'trinity_password',
+        'db_name' => getenv('DB_CHAR_NAME') ?: 'characters'
+    ),
+);
+
+// Script version
+$config['script_version'] = '2.0.2';

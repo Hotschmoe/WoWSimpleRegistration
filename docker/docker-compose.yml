@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # MySQL Database for Auth/Realmd
   wow-mysql-auth:
@@ -63,8 +61,8 @@ services:
     volumes:
       # Mount the entire project for development
       - ../:/var/www/html
-      # Mount config separately to preserve it
-      - ./config/config.php:/var/www/html/application/config/config.php
+      # Prevent vendor directory from being overridden by host mount
+      - /var/www/html/application/vendor
     environment:
       # These can be used in your config.php if needed
       DB_AUTH_HOST: wow-mysql-auth

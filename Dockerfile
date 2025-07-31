@@ -33,23 +33,27 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . /var/www/html/
+# First, copy only composer files to leverage Docker cache
+COPY application/composer.json application/composer.lock* /var/www/html/application/
 
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html
-
-# Change to application directory and install dependencies
+# Change to application directory
 WORKDIR /var/www/html/application
-RUN composer install --no-dev --optimize-autoloader
+
+# Install dependencies as root (composer will warn but it works)
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --prefer-dist
+
+# Now copy the rest of the application
+WORKDIR /var/www/html
+COPY . /var/www/html/
 
 # Copy sample config if config doesn't exist
 RUN if [ ! -f "/var/www/html/application/config/config.php" ]; then \
     cp /var/www/html/application/config/config.php.sample /var/www/html/application/config/config.php; \
     fi
 
-# Go back to document root
-WORKDIR /var/www/html
+# Set proper permissions after everything is copied
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
 # Apache configuration to point to the correct directory
 RUN echo '<VirtualHost *:80>\n\
