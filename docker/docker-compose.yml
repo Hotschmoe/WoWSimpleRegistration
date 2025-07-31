@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # MySQL Database for Auth/Realmd
+  wow-mysql-auth:
+    image: mysql:5.7
+    container_name: wow-mysql-auth
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: auth
+      MYSQL_USER: trinity
+      MYSQL_PASSWORD: trinity_password
+    volumes:
+      - wow_auth_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - wow-network
+
+  # MySQL Database for Characters (Realm 1)
+  wow-mysql-characters:
+    image: mysql:5.7
+    container_name: wow-mysql-characters
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: characters
+      MYSQL_USER: trinity
+      MYSQL_PASSWORD: trinity_password
+    volumes:
+      - wow_characters_data:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    networks:
+      - wow-network
+
+  # phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: wow-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOSTS: wow-mysql-auth,wow-mysql-characters
+    ports:
+      - "8080:80"
+    networks:
+      - wow-network
+    depends_on:
+      - wow-mysql-auth
+      - wow-mysql-characters
+
+  # WoW Simple Registration Web Service
+  wow-registration:
+    build:
+      context: ../  # Build from the parent directory (the cloned repo)
+      dockerfile: Dockerfile
+    container_name: wow-registration
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      # Mount the entire project for development
+      - ../:/var/www/html
+      # Mount config separately to preserve it
+      - ./config/config.php:/var/www/html/application/config/config.php
+    environment:
+      # These can be used in your config.php if needed
+      DB_AUTH_HOST: wow-mysql-auth
+      DB_AUTH_PORT: 3306
+      DB_AUTH_USER: trinity
+      DB_AUTH_PASS: trinity_password
+      DB_AUTH_NAME: auth
+      DB_CHAR_HOST: wow-mysql-characters
+      DB_CHAR_PORT: 3306
+      DB_CHAR_USER: trinity
+      DB_CHAR_PASS: trinity_password
+      DB_CHAR_NAME: characters
+    networks:
+      - wow-network
+    depends_on:
+      - wow-mysql-auth
+      - wow-mysql-characters
+
+  # Optional: Mail server for testing email functionality
+  mailhog:
+    image: mailhog/mailhog
+    container_name: wow-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI
+    networks:
+      - wow-network
+
+networks:
+  wow-network:
+    driver: bridge
+
+volumes:
+  wow_auth_data:
+  wow_characters_data:

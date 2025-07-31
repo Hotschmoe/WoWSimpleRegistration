@@ -1,0 +1,49 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+SECURITY.md
+LICENSE
+screenshots/
+
+# Docker files (don't copy these into the image)
+docker/
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Development files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Composer cache (will be regenerated)
+application/vendor/
+application/composer.lock
+
+# Config files (will be created from sample or mounted)
+application/config/config.php
+
+# Logs and temp files
+*.log
+*.cache
+*.tmp
+tmp/
+temp/
+cache/
+
+# Test files
+tests/
+phpunit.xml
+.phpunit.result.cache
+
+# OS files
+*.bak
+*.orig

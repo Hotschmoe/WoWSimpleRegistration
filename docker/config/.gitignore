@@ -1,0 +1,6 @@
+# Ignore actual config files
+*.php
+!config.php.example
+
+# Keep the directory
+!.gitignore
