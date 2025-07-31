@@ -108,28 +108,43 @@ environment:
 
 ### Custom Configuration
 
-1. **Copy the sample config (if needed):**
-   ```bash
-   # The Docker container will automatically create config.php from the sample
-   # If you want to customize it, you can edit it directly:
-   docker exec -it wow-registration nano /var/www/html/application/config/config.php
-   ```
+#### Quick Setup with Docker-Optimized Config
 
-   Or copy and edit locally:
+1. **Copy the Docker-optimized config:**
    ```bash
+   # From the docker/ directory, copy the config with environment variable support
    cp config/config.php.example ../application/config/config.php
-   # Then edit ../application/config/config.php
    ```
 
-2. **Edit the configuration file to match your server setup:**
-   - Update database credentials (or use environment variables)
+   This config file is pre-configured to work with Docker and includes:
+   - Environment variable support for database connections
+   - MailHog SMTP settings for email testing
+   - Proper database service names for Docker networking
+
+2. **Alternative: Manual Configuration**
+   ```bash
+   # Or use the original sample config and modify it manually
+   cp ../application/config/config.php.sample ../application/config/config.php
+   # Then edit ../application/config/config.php with your database settings
+   ```
+
+3. **Edit the configuration file to match your server setup:**
+   - Update database credentials (Docker config uses environment variables automatically)
    - Set your realm information
-   - Configure SMTP settings
+   - Configure SMTP settings (MailHog is pre-configured for testing)
    - Choose your template
    - Enable/disable features
 
-3. **Using Environment Variables:**
-   The sample config in `docker/config/config.php.example` shows how to use environment variables for database configuration, which are already set in the docker-compose.yml.
+#### Using Environment Variables
+
+The Docker-optimized config (`docker/config/config.php.example`) uses environment variables that are automatically set by docker-compose.yml:
+
+- `DB_AUTH_HOST` → wow-mysql-auth
+- `DB_AUTH_USER` → trinity  
+- `DB_AUTH_PASS` → trinity_password
+- `DB_CHAR_HOST` → wow-mysql-characters
+
+If you want to override any settings, you can modify the environment variables in docker-compose.yml or set them when running the containers.
 
 ### Volume Mounting for Development
 
